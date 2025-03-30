@@ -3,17 +3,7 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import type { Course } from "../../types";
 
 export function CourseManagement() {
-  const [courses, setCourses] = useState<Course[]>([
-    {
-      id: "1",
-      name: "Full Stack Development",
-      description: "Complete web development bootcamp",
-      duration: "12 weeks",
-      instructor: "John Doe",
-      fees: 999,
-      technologies: ["React", "Node.js", "MongoDB"],
-    },
-  ]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [isAddingCourse, setIsAddingCourse] = useState(false);
   const [isEditingCourse, setIsEditingCourse] = useState(false);
   const [courseToEdit, setCourseToEdit] = useState<Course | null>(null);
@@ -26,48 +16,55 @@ export function CourseManagement() {
     technologies: [],
   });
 
+  // Fetch courses from the backend
   useEffect(() => {
-    const storedCourses = localStorage.getItem("courses");
-    if (storedCourses) {
-      setCourses(JSON.parse(storedCourses));
-    }
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/courses");
+        if (!response.ok) throw new Error("Failed to fetch courses");
+        const data = await response.json();
+        setCourses(data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+    fetchCourses();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("courses", JSON.stringify(courses));
-  }, [courses]);
-
-  const handleAddCourse = (e: React.FormEvent) => {
+  // Handle adding or editing a course
+  const handleAddOrEditCourse = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCourses((prev) => [
-      ...prev,
-      { ...newCourse, id: Date.now().toString() } as Course,
-    ]);
-    setIsAddingCourse(false);
-    setNewCourse({
-      name: "",
-      description: "",
-      duration: "",
-      instructor: "",
-      fees: 0,
-      technologies: [],
-    });
-  };
-
-  const handleEditCourse = (course: Course) => {
-    setIsEditingCourse(true);
-    setCourseToEdit(course);
-    setNewCourse(course);
-  };
-
-  const handleSaveEdit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (courseToEdit) {
+    if (
+      !newCourse.name ||
+      !newCourse.duration ||
+      !newCourse.instructor ||
+      !newCourse.description ||
+      (newCourse.fees ?? 0) <= 0 ||
+      (newCourse.technologies ?? []).length === 0
+    ) {
+      alert("Please fill in all fields correctly.");
+      return;
+    }
+    try {
+      const method = isEditingCourse ? "PUT" : "POST";
+      const url = isEditingCourse
+        ? `http://localhost:3000/api/courses/${courseToEdit?._id}`
+        : "http://localhost:3000/api/courses";
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCourse),
+      });
+      if (!response.ok) throw new Error("Failed to save course");
+      const savedCourse = await response.json();
       setCourses((prev) =>
-        prev.map((course) =>
-          course.id === courseToEdit.id ? { ...course, ...newCourse } : course
-        )
+        isEditingCourse
+          ? prev.map((course) =>
+              course._id === savedCourse._id ? savedCourse : course
+            )
+          : [...prev, savedCourse]
       );
+      setIsAddingCourse(false);
       setIsEditingCourse(false);
       setCourseToEdit(null);
       setNewCourse({
@@ -78,11 +75,32 @@ export function CourseManagement() {
         fees: 0,
         technologies: [],
       });
+    } catch (error) {
+      console.error("Error saving course:", error);
     }
   };
 
-  const handleDeleteCourse = (courseId: string) => {
-    setCourses((prev) => prev.filter((course) => course.id !== courseId));
+  // Handle editing a course
+  const handleEditCourse = (course: Course) => {
+    setIsEditingCourse(true);
+    setCourseToEdit(course);
+    setNewCourse(course);
+  };
+
+  // Handle deleting a course
+  const handleDeleteCourse = async (courseId: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/courses/${courseId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete course");
+      setCourses((prev) => prev.filter((course) => course._id !== courseId));
+    } catch (error) {
+      console.error("Error deleting course:", error);
+    }
   };
 
   return (
@@ -98,116 +116,87 @@ export function CourseManagement() {
         </button>
       </div>
 
+      {/* Form for adding or editing a course */}
       {(isAddingCourse || isEditingCourse) && (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <form
-            onSubmit={isEditingCourse ? handleSaveEdit : handleAddCourse}
-            className="space-y-4"
-          >
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Course Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  value={newCourse.name}
-                  onChange={(e) =>
-                    setNewCourse((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Duration
-                </label>
-                <input
-                  type="text"
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  value={newCourse.duration}
-                  onChange={(e) =>
-                    setNewCourse((prev) => ({
-                      ...prev,
-                      duration: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Instructor
-                </label>
-                <input
-                  type="text"
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  value={newCourse.instructor}
-                  onChange={(e) =>
-                    setNewCourse((prev) => ({
-                      ...prev,
-                      instructor: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Fees
-                </label>
-                <input
-                  type="number"
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  value={newCourse.fees}
-                  onChange={(e) =>
-                    setNewCourse((prev) => ({
-                      ...prev,
-                      fees: Number(e.target.value),
-                    }))
-                  }
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
-                required
-                rows={3}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                value={newCourse.description}
-                onChange={(e) =>
-                  setNewCourse((prev) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Technologies (comma-separated)
-              </label>
-              <input
-                type="text"
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                value={newCourse.technologies?.join(", ")}
-                onChange={(e) =>
-                  setNewCourse((prev) => ({
-                    ...prev,
-                    technologies: e.target.value
-                      .split(",")
-                      .map((t) => t.trim()),
-                  }))
-                }
-              />
-            </div>
-            <div className="flex justify-end space-x-3">
+        <form
+          onSubmit={handleAddOrEditCourse}
+          className="bg-white p-6 rounded-lg shadow-sm"
+        >
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Course Name"
+              value={newCourse.name}
+              onChange={(e) =>
+                setNewCourse((prev) => ({ ...prev, name: e.target.value }))
+              }
+              required
+              className="block w-full border border-gray-300 rounded-md p-2"
+            />
+            <input
+              type="text"
+              placeholder="Duration"
+              value={newCourse.duration}
+              onChange={(e) =>
+                setNewCourse((prev) => ({ ...prev, duration: e.target.value }))
+              }
+              required
+              className="block w-full border border-gray-300 rounded-md p-2"
+            />
+            <input
+              type="text"
+              placeholder="Instructor"
+              value={newCourse.instructor}
+              onChange={(e) =>
+                setNewCourse((prev) => ({
+                  ...prev,
+                  instructor: e.target.value,
+                }))
+              }
+              required
+              className="block w-full border border-gray-300 rounded-md p-2"
+            />
+            <input
+              type="number"
+              placeholder="Fees"
+              value={newCourse.fees}
+              onChange={(e) =>
+                setNewCourse((prev) => ({
+                  ...prev,
+                  fees: Number(e.target.value),
+                }))
+              }
+              required
+              className="block w-full border border-gray-300 rounded-md p-2"
+            />
+            <textarea
+              placeholder="Description"
+              value={newCourse.description}
+              onChange={(e) =>
+                setNewCourse((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
+              required
+              className="block w-full border border-gray-300 rounded-md p-2"
+            />
+            <input
+              type="text"
+              placeholder="Technologies (comma-separated)"
+              value={newCourse.technologies?.join(", ")}
+              onChange={(e) =>
+                setNewCourse((prev) => ({
+                  ...prev,
+                  technologies: e.target.value
+                    .split(",")
+                    .map((tech) => tech.trim()),
+                }))
+              }
+              required
+              className="block w-full border border-gray-300 rounded-md p-2"
+            />
+            <div className="flex justify-end space-x-2">
               <button
                 type="button"
                 onClick={() => {
@@ -231,17 +220,18 @@ export function CourseManagement() {
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
               >
-                {isEditingCourse ? "Save Changes" : "Save Course"}
+                {isEditingCourse ? "Save Changes" : "Add Course"}
               </button>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       )}
 
+      {/* Display the list of courses */}
       <div className="bg-white shadow-sm rounded-lg">
         <div className="grid grid-cols-1 divide-y divide-gray-200">
           {courses.map((course) => (
-            <div key={course.id} className="p-6">
+            <div key={course._id} className="p-6">
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">
@@ -274,7 +264,7 @@ export function CourseManagement() {
                     <Edit className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => handleDeleteCourse(course.id)}
+                    onClick={() => handleDeleteCourse(course._id)}
                     className="p-2 text-gray-400 hover:text-red-600"
                   >
                     <Trash2 className="w-5 h-5" />

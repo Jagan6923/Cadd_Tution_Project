@@ -1,93 +1,74 @@
+import { useAuthStore } from "../../lib/store";
+import { useEffect, useState } from "react";
+
+interface UserData {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 const StudentsList = () => {
-  const students = [
-    {
-      id: 1,
-      name: "Jeyaraman",
-      email: "jeyaraman@example.com",
-      course: "Full Stack Development",
-      batch: "Batch A",
-    },
-    {
-      id: 2,
-      name: "Anand",
-      email: "anand@example.com",
-      course: "Mobile App Development",
-      batch: "Batch B",
-    },
-    {
-      id: 3,
-      name: "Sathish",
-      email: "sathish@example.com",
-      course: "Full Stack Development",
-      batch: "Batch C",
-    },
-    {
-      id: 4,
-      name: "John",
-      email: "john@example.com",
-      course: "UI/UX Design",
-      batch: "Batch A",
-    },
-    {
-      id: 5,
-      name: "Dinesh",
-      email: "dinesh@example.com",
-      course: "Full Stack Development",
-      batch: "Batch B",
-    },
-  ];
+  const user = useAuthStore((state) => state.user);
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (user?.role === "admin") {
+        try {
+          const response = await fetch("http://localhost:3000/api/users", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+          if (!response.ok) throw new Error("Failed to fetch users");
+          const data = await response.json();
+          setUsers(data);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, [user]);
 
   return (
     <div className="rounded-lg bg-white p-6 shadow-sm">
-      <h2 className="text-2xl font-bold mb-4">Students List</h2>
-      <table className="w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider"
-            >
-              Name
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider"
-            >
-              Email
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider"
-            >
-              Course
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider"
-            >
-              Batch
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {students.map((student) => (
-            <tr key={student.id}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {student.name}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {student.email}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {student.course}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {student.batch}
-              </td>
+      <h2 className="text-2xl font-bold mb-4">All Users (Admin View)</h2>
+
+      {loading ? (
+        <p>Loading user details...</p>
+      ) : user?.role !== "admin" ? (
+        <p className="text-red-500">
+          Access Denied. Only Admins can view this page.
+        </p>
+      ) : users.length > 0 ? (
+        <table className="min-w-full border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border px-4 py-2 text-left">Name</th>
+              <th className="border px-4 py-2 text-left">Email</th>
+              <th className="border px-4 py-2 text-left">Role</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user._id} className="border-b">
+                <td className="border px-4 py-2">{user.name}</td>
+                <td className="border px-4 py-2">{user.email}</td>
+                <td className="border px-4 py-2">{user.role}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>No users found.</p>
+      )}
     </div>
   );
 };

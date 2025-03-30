@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface Course {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   duration: string;
@@ -17,7 +17,7 @@ export interface Course {
 }
 
 export interface Batch {
-  id: string;
+  _id: string;
   name: string;
   courseId: string;
   instructorId: string;
