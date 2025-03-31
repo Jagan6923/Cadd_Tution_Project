@@ -15,7 +15,7 @@ export function ProtectedRoute({
   allowedRoles,
 }: ProtectedRouteProps) {
   const user = useAuthStore((state) => state.user);
-  const location = useLocation();
+  const location = useLocation(); 
 
   if (!user) {
     // User is not logged in; redirect to login

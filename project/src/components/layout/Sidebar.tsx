@@ -65,7 +65,7 @@ export function Sidebar() {
       >
         <div className="flex h-16 items-center justify-center">
           <GraduationCapIcon className="h-8 w-8 text-blue-500" />
-          <span className="ml-2 text-xl font-bold text-white">EduAdmin</span>
+          <span className="ml-2 text-xl font-bold text-white">Cadd Cae</span>
         </div>
         <nav className="mt-4 space-y-1">
           {navigation.map((item) => {
