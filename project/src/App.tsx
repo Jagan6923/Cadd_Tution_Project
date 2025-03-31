@@ -5,20 +5,19 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Layout } from "./components/layout/Layout";
-import { StudentEnrollment } from "./components/forms/StudentEnrollment";
-import { StaffLeave } from "./components/forms/StaffLeave";
+import { StudentEnrollment } from "./components/Students/StudentEnrollment";
+import { StaffLeave } from "./components/Staff/StaffLeave";
 import { LoginForm } from "./components/auth/LoginForm";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuthStore } from "./lib/store";
 import { CourseManagement } from "./components/admin/CourseManagement";
 import { BatchManagement } from "./components/admin/BatchManagement";
 import { LeaveManagement } from "./components/admin/LeaveManagement";
-import StudentsList from "./components/Students/StudentsList";
-import TakeAttendance from "./components/Students/Attendence";
-import Notifications from "./components/Notification/Notification";
-import MyCoursePage from "./components/Students/Course";
+import StudentsList from "./components/admin/StudentsList";
+import MyCoursePage from "./components/Students/StudentDashboard";
 import { RegisterForm } from "./components/auth/RegisterForm";
-import Dashboard from "./components/admin/Dashboard";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import StaffDashboard from "./components/Staff/StaffDashboard";
 
 function App() {
   const userRole = useAuthStore((state) => state.user?.role);
@@ -36,7 +35,21 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
+          <Route
+            index
+            element={
+              userRole === "admin" ? (
+                <AdminDashboard />
+              ) : userRole === "staff" ? (
+                <StaffDashboard />
+              ) : userRole === "user" ? (
+                <MyCoursePage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+
           <Route
             path="studentslist"
             element={
@@ -58,22 +71,6 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <BatchManagement />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="attendance"
-            element={
-              <ProtectedRoute allowedRoles={["admin", "staff"]}>
-                <TakeAttendance />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="notifications"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <Notifications />
               </ProtectedRoute>
             }
           />

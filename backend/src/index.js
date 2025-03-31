@@ -8,6 +8,11 @@ const coursesRoutes = require("./Routes/courseRoutes");
 const batchRoutes = require("./Routes/batchRoutes");
 const userRoutes = require("./Routes/userRoutes");
 const dashboardRoutes = require("./Routes/dashboardRoutes");
+const staffRoutes = require("./Routes/staffRoutes");
+const leaveRoutes = require("./Routes/leaveRoutes");
+
+
+
 const jwt = require("jsonwebtoken");
 
 const app = express();
@@ -23,6 +28,8 @@ app.use("/api/courses", coursesRoutes);
 app.use("/api/batches", batchRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/staff", staffRoutes);
+app.use("/api/leaves", leaveRoutes);
 // Start Server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

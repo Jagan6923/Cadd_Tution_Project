@@ -2,7 +2,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'staff' | 'user';
+  role: "admin" | "staff" | "user";
   avatar?: string;
 }
 
@@ -26,7 +26,14 @@ export interface Batch {
   capacity: number;
   enrolled: number;
   schedule: {
-    days: ('Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday')[];
+    days: (
+      | "Monday"
+      | "Tuesday"
+      | "Wednesday"
+      | "Thursday"
+      | "Friday"
+      | "Saturday"
+    )[];
     startTime: string;
     endTime: string;
   };
@@ -45,7 +52,7 @@ export interface Student {
   address: string;
   dateOfBirth: string;
   enrollmentDate: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
 }
 
 export interface Attendance {
@@ -53,18 +60,20 @@ export interface Attendance {
   studentId: string;
   batchId: string;
   date: string;
-  status: 'present' | 'absent' | 'late';
+  status: "present" | "absent" | "late";
   notes?: string;
 }
 
 export interface LeaveRequest {
+  _id(_id: (_id: any, arg1: string) => void, arg1: string): void;
+  _id(_id: any, arg1: string): void;
   id: string;
   staffId: string;
   startDate: string;
   endDate: string;
   reason: string;
-  type: 'sick' | 'casual' | 'vacation';
-  status: 'pending' | 'approved' | 'rejected';
+  type: "sick" | "casual" | "vacation";
+  status: "pending" | "approved" | "rejected";
   appliedDate: string;
 }
 
@@ -73,7 +82,13 @@ export interface Notification {
   userId: string;
   title: string;
   message: string;
-  type: 'attendance' | 'leave' | 'general' | 'course';
+  type: "attendance" | "leave" | "general" | "course";
   read: boolean;
   createdAt: string;
+}
+export interface UserData {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
 }

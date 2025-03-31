@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import type { Course } from "../../types";
-
+import type { UserData } from "../../types";
 export function CourseManagement() {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [instructors, setInstructors] = useState<UserData[]>([]);
   const [isAddingCourse, setIsAddingCourse] = useState(false);
   const [isEditingCourse, setIsEditingCourse] = useState(false);
   const [courseToEdit, setCourseToEdit] = useState<Course | null>(null);
@@ -28,6 +29,28 @@ export function CourseManagement() {
         console.error("Error fetching courses:", error);
       }
     };
+    const fetchInstructors = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/users", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch instructors");
+
+        const data: UserData[] = await response.json();
+        console.log("Fetched users:", data);
+
+        // Filter only instructors (staff role)
+        const instructorList = data.filter((user) => user.role === "staff");
+        console.log("Filtered instructors:", instructorList);
+        setInstructors(instructorList);
+      } catch (error) {
+        console.error("Error fetching instructors:", error);
+      }
+    };
+
+    fetchInstructors();
     fetchCourses();
   }, []);
 
@@ -143,19 +166,26 @@ export function CourseManagement() {
               required
               className="block w-full border border-gray-300 rounded-md p-2"
             />
-            <input
-              type="text"
-              placeholder="Instructor"
-              value={newCourse.instructor}
-              onChange={(e) =>
-                setNewCourse((prev) => ({
-                  ...prev,
-                  instructor: e.target.value,
-                }))
-              }
-              required
-              className="block w-full border border-gray-300 rounded-md p-2"
-            />
+            <div className="block w-full border border-gray-300 rounded-md p-2">
+              <select
+                required
+                className="mt-1 block w-full   focus:border-blue-500 focus:ring-blue-500"
+                value={newCourse.instructor}
+                onChange={(e) =>
+                  setNewCourse((prev) => ({
+                    ...prev,
+                    instructor: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Select Staff</option>
+                {instructors.map((staff) => (
+                  <option key={staff._id} value={staff._id}>
+                    {staff.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <input
               type="number"
               placeholder="Fees"
@@ -242,7 +272,13 @@ export function CourseManagement() {
                   </p>
                   <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                     <span>Duration: {course.duration}</span>
-                    <span>Instructor: {course.instructor}</span>
+                    <span>
+                      Instructor:{" "}
+                      {instructors.find(
+                        (inst) => inst._id === course.instructor
+                      )?.name || "Unknown"}
+                    </span>
+
                     <span>Fees: ₹{course.fees}</span>
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">

@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Users } from "lucide-react";
 import { format } from "date-fns";
-import type { Batch, Course } from "../../types";
+import type { Batch, Course, UserData } from "../../types";
+
+interface LocalUserData {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
 export function BatchManagement() {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [instructors, setInstructors] = useState<LocalUserData[]>([]);
   const [isAddingBatch, setIsAddingBatch] = useState(false);
   const [isEditingBatch, setIsEditingBatch] = useState(false);
   const [batchToEdit, setBatchToEdit] = useState<Batch | null>(null);
@@ -46,9 +54,29 @@ export function BatchManagement() {
         console.error("Error fetching courses:", error);
       }
     };
+    const fetchInstructors = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/users", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch instructors");
 
+        const data: LocalUserData[] = await response.json();
+        console.log("Fetched users:", data);
+
+        // Filter only instructors (staff role)
+        const instructorList = data.filter((user) => user.role === "staff");
+        console.log("Filtered instructors:", instructorList);
+        setInstructors(instructorList);
+      } catch (error) {
+        console.error("Error fetching instructors:", error);
+      }
+    };
     fetchBatches();
     fetchCourses();
+    fetchInstructors();
   }, []);
 
   const handleAddOrEditBatch = async (e: React.FormEvent) => {
@@ -234,7 +262,7 @@ export function BatchManagement() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Instructor
+                  Staff
                 </label>
                 <select
                   required
@@ -247,9 +275,12 @@ export function BatchManagement() {
                     }))
                   }
                 >
-                  <option value="">Select Instructor</option>
-                  <option value="1">John Doe</option>
-                  <option value="2">Jane Smith</option>
+                  <option value="">Select Staff</option>
+                  {instructors.map((staff) => (
+                    <option key={staff._id} value={staff._id}>
+                      {staff.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -417,10 +448,17 @@ export function BatchManagement() {
               </div>
               <div className="mt-4">
                 <p className="text-sm text-gray-500">
-                  Course: {courses.find((course) => course._id === batch.courseId)?.name}
+                  Course:{" "}
+                  {
+                    courses.find((course) => course._id === batch.courseId)
+                      ?.name
+                  }
                 </p>
                 <p className="text-sm text-gray-500">
-                  Instructor: {batch.instructorId}
+                  Instructor:{" "}
+                  {instructors.find(
+                    (instructor) => instructor._id === batch.instructorId
+                  )?.name || "Unknown"}
                 </p>
               </div>
             </div>

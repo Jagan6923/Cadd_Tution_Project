@@ -29,18 +29,14 @@ const navigationConfig = {
     { name: "Student", href: "/studentslist", icon: Users },
     { name: "Courses", href: "/courses", icon: GraduationCap },
     { name: "Batches", href: "/batches", icon: Calendar },
-    { name: "Attendance", href: "/attendance", icon: ClipboardList },
-    { name: "Notifications", href: "/notifications", icon: Bell },
     { name: "Staff", href: "/staff", icon: UserCog },
   ],
   staff: [
     { name: "Dashboard", href: "/", icon: Home },
-    { name: "Attendance", href: "/attendance", icon: ClipboardList },
     { name: "Leave Request", href: "/staff", icon: Calendar },
   ],
   user: [
     { name: "Dashboard", href: "/", icon: Home },
-    { name: "My Courses", href: "/mycourses", icon: GraduationCap },
     { name: "New Course", href: "/students", icon: ClipboardList },
   ],
 };
