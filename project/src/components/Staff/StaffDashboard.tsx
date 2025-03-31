@@ -1,10 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { format } from "date-fns";
-import type { LeaveRequest } from "../../types";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "../../lib/store";
+import { format } from "date-fns";
 
-export function LeaveManagement() {
-  const user = useAuthStore((state) => state.user);
+interface LeaveRequest {
+  id: string;
+  startDate: string;
+  endDate: string;
+  reason: string;
+  status: string;
+  type: string;
+}
+
+function StaffDashboard() {
+  const user = useAuthStore((state: { user: any }) => state.user);
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -36,18 +44,6 @@ export function LeaveManagement() {
     requestId: string,
     newStatus: LeaveRequest["status"]
   ) => {
-    console.log(
-      "Updating Leave Request ID:",
-      requestId,
-      "New Status:",
-      newStatus
-    );
-
-    if (!requestId || requestId === "undefined") {
-      alert("Invalid request ID!");
-      return;
-    }
-
     try {
       const response = await fetch(
         `http://localhost:3000/api/leaves/${requestId}`,
@@ -70,45 +66,36 @@ export function LeaveManagement() {
 
       const successData = await response.json();
       console.log("Leave status updated successfully:", successData.message);
-
-      if (newStatus === "rejected") {
-        setLeaveRequests((prev) =>
-          prev.filter((request) => request._id !== requestId)
-        );
-      } else {
-        setLeaveRequests((prev) =>
-          prev.map((request) =>
-            request._id === requestId
-              ? { ...request, status: newStatus }
-              : request
-          )
-        );
-      }
+      setLeaveRequests((prev) =>
+        prev.map((request) =>
+          request.id === requestId ? { ...request, status: newStatus } : request
+        )
+      );
     } catch (err) {
       console.error("Error updating leave status:", err);
       alert("Error updating leave status. Please try again.");
     }
   };
 
+  if (loading) return <p>Loading leave requests...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">Leave Requests</h2>
-
-      {loading && <p>Loading leave requests...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      <h2 className="text-2xl font-bold text-gray-900">My Leave Requests</h2>
 
       <div className="bg-white shadow-sm rounded-lg">
         <div className="grid grid-cols-1 divide-y divide-gray-200">
-          {leaveRequests.length === 0 && !loading ? (
+          {leaveRequests.length === 0 ? (
             <p className="p-6 text-gray-500">No leave requests found.</p>
           ) : (
             leaveRequests.map((request) => (
-              <div key={request._id} className="p-6">
+              <div key={request.id} className="p-6">
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center space-x-2">
                       <h3 className="text-lg font-medium text-gray-900">
-                        Staff ID: {request.staffId}
+                        Leave Type: {request.type}
                       </h3>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -126,22 +113,11 @@ export function LeaveManagement() {
                     <div className="mt-2 grid grid-cols-2 gap-4 text-sm text-gray-500">
                       <div>
                         <p>
-                          Type:{" "}
-                          {request.type.charAt(0).toUpperCase() +
-                            request.type.slice(1)}
-                        </p>
-                        <p>
-                          Applied:{" "}
-                          {format(new Date(request.appliedDate), "MMM d, yyyy")}
-                        </p>
-                      </div>
-                      <div>
-                        <p>
-                          Start:{" "}
+                          Start Date:{" "}
                           {format(new Date(request.startDate), "MMM d, yyyy")}
                         </p>
                         <p>
-                          End:{" "}
+                          End Date:{" "}
                           {format(new Date(request.endDate), "MMM d, yyyy")}
                         </p>
                       </div>
@@ -150,11 +126,11 @@ export function LeaveManagement() {
                       Reason: {request.reason}
                     </p>
                   </div>
-                  {request.status === "pending" && user?.role === "admin" && (
+                  {request.status === "pending" && (
                     <div className="flex space-x-2">
                       <button
                         onClick={() =>
-                          handleStatusChange(request._id, "approved")
+                          handleStatusChange(request.id, "approved")
                         }
                         className="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
                       >
@@ -162,7 +138,7 @@ export function LeaveManagement() {
                       </button>
                       <button
                         onClick={() =>
-                          handleStatusChange(request._id, "rejected")
+                          handleStatusChange(request.id, "rejected")
                         }
                         className="px-3 py-1 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
                       >
@@ -179,3 +155,5 @@ export function LeaveManagement() {
     </div>
   );
 }
+
+export default StaffDashboard;
