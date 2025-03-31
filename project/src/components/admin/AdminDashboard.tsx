@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../lib/store";
+import { Users, FileText, Calendar, LayoutGrid } from "lucide-react";
 
 interface AdminDashboardData {
   totalStudents: number;
@@ -53,60 +54,35 @@ function AdminDashboard() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-medium text-gray-900">Total Students</h3>
+          <div className="flex items-center">
+            <Users className="w-6 h-6 text-blue-600 mr-2" />
+            <h3 className="text-lg font-medium text-gray-900">
+              Total Students
+            </h3>
+          </div>
           <p className="mt-2 text-3xl font-bold text-blue-600">
             {dashboardData?.totalStudents}
           </p>
         </div>
         <div className="rounded-lg bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-medium text-gray-900">Active Batches</h3>
-          <p className="mt-2 text-3xl font-bold text-green-600">
+          <div className="flex items-center">
+            <Calendar className="w-6 h-6 text-blue-600 mr-2" />
+            <h3 className="text-lg font-medium text-gray-900">
+              Active Batches
+            </h3>
+          </div>
+          <p className="mt-2 text-3xl font-bold text-blue-600">
             {dashboardData?.activeBatches}
           </p>
         </div>
         <div className="rounded-lg bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-medium text-gray-900">Total Courses</h3>
-          <p className="mt-2 text-3xl font-bold text-purple-600">
+          <div className="flex items-center">
+            <FileText className="w-6 h-6 text-blue-600 mr-2" />
+            <h3 className="text-lg font-medium text-gray-900">Total Courses</h3>
+          </div>
+          <p className="mt-2 text-3xl font-bold text-blue-600">
             {dashboardData?.totalCourses}
           </p>
-        </div>
-      </div>
-
-      <div className="grid gap-6">
-        <div className="bg-white shadow-sm rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Recent Enrollments
-          </h3>
-          {dashboardData && dashboardData.recentEnrollments.length > 0 ? (
-            dashboardData.recentEnrollments.map((enrollment, index) => (
-              <div key={index} className="border-b pb-4 mb-4 last:border-0">
-                <p className="font-medium">{enrollment.name}</p>
-                <p className="text-sm text-gray-500">
-                  Enrolled in {enrollment.course} on {enrollment.enrolledDate}
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No recent enrollments found.</p>
-          )}
-        </div>
-
-        <div className="bg-white shadow-sm rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Upcoming Batches
-          </h3>
-          {dashboardData && dashboardData.upcomingBatches?.length > 0 ? (
-            dashboardData.upcomingBatches.map((batch, index) => (
-              <div key={index} className="border-b pb-4 mb-4 last:border-0">
-                <p className="font-medium">{batch.batch}</p>
-                <p className="text-sm text-gray-500">
-                  Starting on {batch.startDate} - {batch.seatsLeft} seats left
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No upcoming batches found.</p>
-          )}
         </div>
       </div>
     </div>

@@ -1,48 +1,29 @@
 const express = require("express");
+const User = require("../models/User");
+const Course = require("../models/Course");
+const Batch = require("../models/Batch");
 const Enrollment = require("../models/Enrollment");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Create a new enrollment
-router.post("/", authMiddleware, async (req, res) => {
-    try {
-        const { courseId, batchId } = req.body;
-
-        // Ensure the user is logged in and has a valid role
-        if (!req.user || req.user.role !== "user") {
-            return res.status(403).json({ message: "Access denied." });
-        }
-
-        const newEnrollment = new Enrollment({
-            student: req.user._id,
-            course: courseId,
-            batch: batchId,
-        });
-
-        await newEnrollment.save();
-        res.status(201).json(newEnrollment);
-    } catch (error) {
-        console.error("Error creating enrollment:", error);
-        res.status(500).json({ message: "Failed to create enrollment." });
-    }
-});
-
-// Get enrollments for a specific student
 router.get("/", authMiddleware, async (req, res) => {
     try {
-        if (!req.user) {
-            return res.status(403).json({ message: "Access denied." });
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admins only." });
         }
+        const totalStudents = await User.countDocuments({ role: "user" });
+        const totalCourses = await Course.countDocuments();
+        const activeBatches = await Batch.countDocuments();
+        res.json({
+            totalStudents,
+            totalCourses,
+            activeBatches,
 
-        const enrollments = await Enrollment.find({ student: req.user._id })
-            .populate("course", "name")
-            .populate("batch", "name");
-
-        res.json(enrollments);
+        });
     } catch (error) {
-        console.error("Error fetching enrollments:", error);
-        res.status(500).json({ message: "Failed to fetch enrollments." });
+        console.error("Error fetching dashboard data:", error);
+        res.status(500).json({ message: "Server error" });
     }
 });
 
