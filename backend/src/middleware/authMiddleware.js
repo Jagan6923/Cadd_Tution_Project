@@ -1,8 +1,10 @@
+// middleware/authMiddleware.js
+
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
     if (!process.env.JWT_SECRET) {
-        console.error("❌ JWT_SECRET is missing! Authentication will fail.");
+        console.error("JWT_SECRET is missing! Authentication will fail.");
         return res.status(500).json({ message: "Server misconfiguration. Contact admin." });
     }
 

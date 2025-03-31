@@ -17,10 +17,10 @@ export function Header() {
       <div className="flex h-16 items-center justify-between px-4">
         <div className="flex-1" />
         <div className="flex items-center space-x-4">
-          <button className="relative p-2 text-gray-600 hover:text-gray-900">
+          {/* <button className="relative p-2 text-gray-600 hover:text-gray-900">
             <Bell className="h-6 w-6" />
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
-          </button>
+          </button> */}
           <div className="flex items-center space-x-2">
             <span className="text-sm font-medium text-gray-700">
               {user?.name} ({user?.role})

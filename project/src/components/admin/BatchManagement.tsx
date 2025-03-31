@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Users } from "lucide-react";
 import { format } from "date-fns";
-import type { Batch } from "../../types";
+import type { Batch, Course, UserData } from "../../types";
+
+interface LocalUserData {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
 export function BatchManagement() {
-  const [batches, setBatches] = useState<Batch[]>([
-    {
-      id: "1",
-      name: "Batch A",
-      courseId: "1",
-      instructorId: "1",
-      startDate: "2024-04-01",
-      endDate: "2024-06-30",
-      capacity: 30,
-      enrolled: 25,
-      schedule: {
-        days: ["Monday", "Wednesday", "Friday"],
-        startTime: "09:00",
-        endTime: "11:00",
-      },
-    },
-  ]);
-
+  const [batches, setBatches] = useState<Batch[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [instructors, setInstructors] = useState<LocalUserData[]>([]);
   const [isAddingBatch, setIsAddingBatch] = useState(false);
   const [isEditingBatch, setIsEditingBatch] = useState(false);
   const [batchToEdit, setBatchToEdit] = useState<Batch | null>(null);
@@ -34,60 +26,93 @@ export function BatchManagement() {
     capacity: 30,
     enrolled: 0,
     schedule: {
-      days: [], // Initialize as an empty array
+      days: [],
       startTime: "",
       endTime: "",
     },
   });
 
   useEffect(() => {
-    const storedBatches = localStorage.getItem("batches");
-    if (storedBatches) {
-      setBatches(JSON.parse(storedBatches));
-    }
+    const fetchBatches = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/batches");
+        if (!response.ok) throw new Error("Failed to fetch batches");
+        const data = await response.json();
+        setBatches(data);
+      } catch (error) {
+        console.error("Error fetching batches:", error);
+      }
+    };
+
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/courses");
+        if (!response.ok) throw new Error("Failed to fetch courses");
+        const data = await response.json();
+        setCourses(data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+    const fetchInstructors = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/users", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch instructors");
+
+        const data: LocalUserData[] = await response.json();
+        console.log("Fetched users:", data);
+
+        // Filter only instructors (staff role)
+        const instructorList = data.filter((user) => user.role === "staff");
+        console.log("Filtered instructors:", instructorList);
+        setInstructors(instructorList);
+      } catch (error) {
+        console.error("Error fetching instructors:", error);
+      }
+    };
+    fetchBatches();
+    fetchCourses();
+    fetchInstructors();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("batches", JSON.stringify(batches));
-  }, [batches]);
-
-  const handleAddBatch = (e: React.FormEvent) => {
+  const handleAddOrEditBatch = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBatches((prev) => [
-      ...prev,
-      { ...newBatch, id: Date.now().toString() } as Batch,
-    ]);
-    setIsAddingBatch(false);
-    setNewBatch({
-      name: "",
-      courseId: "",
-      instructorId: "",
-      startDate: "",
-      endDate: "",
-      capacity: 30,
-      enrolled: 0,
-      schedule: {
-        days: [],
-        startTime: "",
-        endTime: "",
-      },
-    });
-  };
-
-  const handleEditBatch = (batch: Batch) => {
-    setIsEditingBatch(true);
-    setBatchToEdit(batch);
-    setNewBatch(batch);
-  };
-
-  const handleSaveEdit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (batchToEdit) {
+    if (
+      !newBatch.name ||
+      !newBatch.courseId ||
+      !newBatch.instructorId ||
+      !newBatch.startDate ||
+      !newBatch.endDate ||
+      (newBatch.capacity ?? 0) <= 0 ||
+      (newBatch.schedule?.days ?? []).length === 0
+    ) {
+      alert("Please fill in all fields correctly.");
+      return;
+    }
+    try {
+      const method = isEditingBatch ? "PUT" : "POST";
+      const url = isEditingBatch
+        ? `http://localhost:3000/api/batches/${batchToEdit?._id}`
+        : "http://localhost:3000/api/batches";
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBatch),
+      });
+      if (!response.ok) throw new Error("Failed to save batch");
+      const savedBatch = await response.json();
       setBatches((prev) =>
-        prev.map((batch) =>
-          batch.id === batchToEdit.id ? { ...batch, ...newBatch } : batch
-        )
+        isEditingBatch
+          ? prev.map((batch) =>
+              batch._id === savedBatch._id ? savedBatch : batch
+            )
+          : [...prev, savedBatch]
       );
+      setIsAddingBatch(false);
       setIsEditingBatch(false);
       setBatchToEdit(null);
       setNewBatch({
@@ -104,11 +129,30 @@ export function BatchManagement() {
           endTime: "",
         },
       });
+    } catch (error) {
+      console.error("Error saving batch:", error);
     }
   };
 
-  const handleDeleteBatch = (batchId: string) => {
-    setBatches((prev) => prev.filter((batch) => batch.id !== batchId));
+  const handleEditBatch = (batch: Batch) => {
+    setIsEditingBatch(true);
+    setBatchToEdit(batch);
+    setNewBatch(batch);
+  };
+
+  const handleDeleteBatch = async (batchId: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/batches/${batchId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete batch");
+      setBatches((prev) => prev.filter((batch) => batch._id !== batchId));
+    } catch (error) {
+      console.error("Error deleting batch:", error);
+    }
   };
 
   return (
@@ -126,10 +170,7 @@ export function BatchManagement() {
 
       {(isAddingBatch || isEditingBatch) && (
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <form
-            onSubmit={isEditingBatch ? handleSaveEdit : handleAddBatch}
-            className="space-y-4"
-          >
+          <form onSubmit={handleAddOrEditBatch} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -161,8 +202,11 @@ export function BatchManagement() {
                   }
                 >
                   <option value="">Select Course</option>
-                  <option value="1">Full Stack Development</option>
-                  <option value="2">Mobile App Development</option>
+                  {courses.map((course) => (
+                    <option key={course._id} value={course._id}>
+                      {course.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -218,7 +262,7 @@ export function BatchManagement() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Instructor
+                  Staff
                 </label>
                 <select
                   required
@@ -231,9 +275,12 @@ export function BatchManagement() {
                     }))
                   }
                 >
-                  <option value="">Select Instructor</option>
-                  <option value="1">John Doe</option>
-                  <option value="2">Jane Smith</option>
+                  <option value="">Select Staff</option>
+                  {instructors.map((staff) => (
+                    <option key={staff._id} value={staff._id}>
+                      {staff.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -352,7 +399,7 @@ export function BatchManagement() {
       <div className="bg-white shadow-sm rounded-lg">
         <div className="grid grid-cols-1 divide-y divide-gray-200">
           {batches.map((batch) => (
-            <div key={batch.id} className="p-6">
+            <div key={batch._id} className="p-6">
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">
@@ -392,12 +439,27 @@ export function BatchManagement() {
                     <Edit className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => handleDeleteBatch(batch.id)}
+                    onClick={() => handleDeleteBatch(batch._id)}
                     className="p-2 text-gray-400 hover:text-red-600"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
+              </div>
+              <div className="mt-4">
+                <p className="text-sm text-gray-500">
+                  Course:{" "}
+                  {
+                    courses.find((course) => course._id === batch.courseId)
+                      ?.name
+                  }
+                </p>
+                <p className="text-sm text-gray-500">
+                  Instructor:{" "}
+                  {instructors.find(
+                    (instructor) => instructor._id === batch.instructorId
+                  )?.name || "Unknown"}
+                </p>
               </div>
             </div>
           ))}

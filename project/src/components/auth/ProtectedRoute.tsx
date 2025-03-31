@@ -18,15 +18,12 @@ export function ProtectedRoute({
   const location = useLocation();
 
   if (!user) {
-    // User is not logged in; redirect to login
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // User does not have an allowed role; redirect to home
     return <Navigate to="/" replace />;
   }
 
-  // User is authorized, render the children
   return <>{children}</>;
 }
