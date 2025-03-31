@@ -17,7 +17,7 @@ export function CourseManagement() {
     technologies: [],
   });
 
-  // Fetch courses from the backend
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -41,7 +41,7 @@ export function CourseManagement() {
         const data: UserData[] = await response.json();
         console.log("Fetched users:", data);
 
-        // Filter only instructors (staff role)
+     
         const instructorList = data.filter((user) => user.role === "staff");
         console.log("Filtered instructors:", instructorList);
         setInstructors(instructorList);
@@ -54,7 +54,7 @@ export function CourseManagement() {
     fetchCourses();
   }, []);
 
-  // Handle adding or editing a course
+
   const handleAddOrEditCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     if (
@@ -103,14 +103,14 @@ export function CourseManagement() {
     }
   };
 
-  // Handle editing a course
+
   const handleEditCourse = (course: Course) => {
     setIsEditingCourse(true);
     setCourseToEdit(course);
     setNewCourse(course);
   };
 
-  // Handle deleting a course
+
   const handleDeleteCourse = async (courseId: string) => {
     try {
       const response = await fetch(
@@ -139,7 +139,7 @@ export function CourseManagement() {
         </button>
       </div>
 
-      {/* Form for adding or editing a course */}
+     
       {(isAddingCourse || isEditingCourse) && (
         <form
           onSubmit={handleAddOrEditCourse}
@@ -257,7 +257,7 @@ export function CourseManagement() {
         </form>
       )}
 
-      {/* Display the list of courses */}
+
       <div className="bg-white shadow-sm rounded-lg">
         <div className="grid grid-cols-1 divide-y divide-gray-200">
           {courses.map((course) => (

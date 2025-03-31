@@ -18,7 +18,7 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 
@@ -31,6 +31,7 @@ app.use("/api/dashboard", enrollmentRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/leaves", leaveRoutes);
 app.use("/api/enrollments", StudentEnrollmentRoutes);
+
 // Start Server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

@@ -46,7 +46,7 @@ router.get("/", authMiddleware, async (req, res) => {
     }
 });
 
-// Assign a batch to a staff member (Admin only)
+// Assign a batch to a staff member
 router.put("/assign-batch/:staffId", authMiddleware, async (req, res) => {
     try {
         if (req.user.role !== "admin") {

@@ -1,7 +1,7 @@
-// routes/courseRoutes.js (Express example)
+// routes/courseRoutes.js 
 const express = require("express");
 const router = express.Router();
-const Course = require("../models/Course"); // Assuming you have a Course model
+const Course = require("../models/Course"); 
 
 // Get all courses
 router.get("/", async (req, res) => {
