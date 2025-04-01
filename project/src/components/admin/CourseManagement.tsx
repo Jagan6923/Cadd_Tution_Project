@@ -17,7 +17,6 @@ export function CourseManagement() {
     technologies: [],
   });
 
-
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -39,11 +38,10 @@ export function CourseManagement() {
         if (!response.ok) throw new Error("Failed to fetch instructors");
 
         const data: UserData[] = await response.json();
-        console.log("Fetched users:", data);
+        // console.log("Fetched users:", data);
 
-     
         const instructorList = data.filter((user) => user.role === "staff");
-        console.log("Filtered instructors:", instructorList);
+        // console.log("Filtered instructors:", instructorList);
         setInstructors(instructorList);
       } catch (error) {
         console.error("Error fetching instructors:", error);
@@ -53,7 +51,6 @@ export function CourseManagement() {
     fetchInstructors();
     fetchCourses();
   }, []);
-
 
   const handleAddOrEditCourse = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,17 +65,26 @@ export function CourseManagement() {
       alert("Please fill in all fields correctly.");
       return;
     }
+
+    const token = localStorage.getItem("token"); // Get the token from localStorage
+
     try {
       const method = isEditingCourse ? "PUT" : "POST";
       const url = isEditingCourse
         ? `http://localhost:3000/api/courses/${courseToEdit?._id}`
         : "http://localhost:3000/api/courses";
+
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add the token to the headers
+        },
         body: JSON.stringify(newCourse),
       });
+
       if (!response.ok) throw new Error("Failed to save course");
+
       const savedCourse = await response.json();
       setCourses((prev) =>
         isEditingCourse
@@ -87,6 +93,7 @@ export function CourseManagement() {
             )
           : [...prev, savedCourse]
       );
+
       setIsAddingCourse(false);
       setIsEditingCourse(false);
       setCourseToEdit(null);
@@ -103,23 +110,28 @@ export function CourseManagement() {
     }
   };
 
-
   const handleEditCourse = (course: Course) => {
     setIsEditingCourse(true);
     setCourseToEdit(course);
     setNewCourse(course);
   };
 
-
   const handleDeleteCourse = async (courseId: string) => {
+    const token = localStorage.getItem("token"); // Get the token from localStorage
+
     try {
       const response = await fetch(
         `http://localhost:3000/api/courses/${courseId}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`, // Add the token to the headers
+          },
         }
       );
+
       if (!response.ok) throw new Error("Failed to delete course");
+
       setCourses((prev) => prev.filter((course) => course._id !== courseId));
     } catch (error) {
       console.error("Error deleting course:", error);
@@ -139,7 +151,6 @@ export function CourseManagement() {
         </button>
       </div>
 
-     
       {(isAddingCourse || isEditingCourse) && (
         <form
           onSubmit={handleAddOrEditCourse}
@@ -256,7 +267,6 @@ export function CourseManagement() {
           </div>
         </form>
       )}
-
 
       <div className="bg-white shadow-sm rounded-lg">
         <div className="grid grid-cols-1 divide-y divide-gray-200">

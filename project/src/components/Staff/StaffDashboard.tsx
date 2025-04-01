@@ -126,7 +126,7 @@ function StaffDashboard() {
                       Reason: {request.reason}
                     </p>
                   </div>
-                  {request.status === "pending" && (
+                  {user?.role === "admin" && request.status === "pending" && (
                     <div className="flex space-x-2">
                       <button
                         onClick={() =>

@@ -1,6 +1,6 @@
-import { Bell, LogOut, User } from 'lucide-react';
-import { useAuthStore } from '../../lib/store';
-import { useNavigate } from 'react-router-dom';
+import { LogOut, User } from "lucide-react";
+import { useAuthStore } from "../../lib/store";
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
   const user = useAuthStore((state) => state.user);
@@ -9,7 +9,7 @@ export function Header() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (

@@ -108,7 +108,7 @@ export function LeaveManagement() {
                   <div>
                     <div className="flex items-center space-x-2">
                       <h3 className="text-lg font-medium text-gray-900">
-                        Staff ID: {request.staffId}
+                        Staff: {request.staffId?.name || "Unknown Staff"}
                       </h3>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

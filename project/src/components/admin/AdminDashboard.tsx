@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../lib/store";
-import { Users, FileText, Calendar, LayoutGrid } from "lucide-react";
+import { Users, FileText, Calendar } from "lucide-react";
 
 interface AdminDashboardData {
   totalStudents: number;
   activeBatches: number;
   totalCourses: number;
-  recentEnrollments: { name: string; course: string; enrolledDate: string }[];
-  upcomingBatches: { batch: string; startDate: string; seatsLeft: number }[];
 }
 
 function AdminDashboard() {
@@ -24,7 +22,6 @@ function AdminDashboard() {
         if (user?.role !== "admin") {
           throw new Error("Unauthorized access");
         }
-
         const response = await fetch("http://localhost:3000/api/dashboard", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

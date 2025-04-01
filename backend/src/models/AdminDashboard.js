@@ -1,3 +1,4 @@
+// models/Enrollment.js
 const mongoose = require("mongoose");
 
 const EnrollmentSchema = new mongoose.Schema({
@@ -7,4 +8,4 @@ const EnrollmentSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Enrollment", EnrollmentSchema);
+module.exports = mongoose.model("AdminDashboard", EnrollmentSchema);

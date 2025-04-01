@@ -7,7 +7,7 @@ const router = express.Router();
 // Get All Users (Only Admins Can Access)
 router.get("/", authMiddleware, async (req, res) => {
     try {
-        
+
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Access denied. Admins only." });
         }
