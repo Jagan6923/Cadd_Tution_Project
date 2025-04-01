@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import type { LeaveRequest } from "../../types";
 import { useAuthStore } from "../../lib/store";
@@ -108,7 +108,10 @@ export function LeaveManagement() {
                   <div>
                     <div className="flex items-center space-x-2">
                       <h3 className="text-lg font-medium text-gray-900">
-                        Staff: {request.staffId || "Unknown Staff"}
+                        Staff:{" "}
+                        {typeof request.staffId === "string"
+                          ? request.staffId // Just show the ID if not populated
+                          : request.staffId?.name || "Unknown Staff"}
                       </h3>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

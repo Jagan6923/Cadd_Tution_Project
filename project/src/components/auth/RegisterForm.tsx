@@ -138,7 +138,10 @@ export function RegisterForm() {
         </form>
         <p className="mt-2 text-sm text-gray-600 text-center">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:text-blue-700">
+          <a
+            href="/login"
+            className="font-medium text-blue-600 hover:text-blue-700"
+          >
             Sign in
           </a>
         </p>
