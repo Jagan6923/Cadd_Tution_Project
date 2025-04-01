@@ -65,6 +65,7 @@ export interface Attendance {
 }
 
 export interface LeaveRequest {
+  _id: string;
   id: string;
   staffId: string;
   startDate: string;
