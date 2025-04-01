@@ -55,15 +55,6 @@ export interface Student {
   status: "active" | "inactive";
 }
 
-export interface Attendance {
-  id: string;
-  studentId: string;
-  batchId: string;
-  date: string;
-  status: "present" | "absent" | "late";
-  notes?: string;
-}
-
 export interface LeaveRequest {
   _id: string;
   id: string;
@@ -76,15 +67,6 @@ export interface LeaveRequest {
   appliedDate: string;
 }
 
-export interface Notification {
-  id: string;
-  userId: string;
-  title: string;
-  message: string;
-  type: "attendance" | "leave" | "general" | "course";
-  read: boolean;
-  createdAt: string;
-}
 export interface UserData {
   _id: string;
   name: string;
