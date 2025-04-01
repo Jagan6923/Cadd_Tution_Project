@@ -34,7 +34,7 @@ const MyCoursePage = () => {
         {courses.map((course) => (
           <div
             key={course._id}
-            className="bg-[#1f2937] text-white rounded-lg shadow-md p-6"
+            className="bg-[#1d4ed8] text-white rounded-lg shadow-md p-6"
           >
             <h3 className="text-xl font-semibold">{course.name}</h3>
             <p className="mt-2 text-sm">{course.description}</p>
