@@ -7,8 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const coursesRoutes = require("./Routes/courseRoutes");
 const batchRoutes = require("./Routes/batchRoutes");
 const userRoutes = require("./Routes/userRoutes");
-const enrollmentRoutes = require("./Routes/enrollmentRoutes");
-const staffRoutes = require("./Routes/staffRoutes");
+const dashboardRoutes = require("./Routes/AdminDashboardRoutes");
 const leaveRoutes = require("./Routes/leaveRoutes");
 const StudentEnrollmentRoutes = require("./Routes/studentEnrollmentRoutes");
 
@@ -27,8 +26,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/batches", batchRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/dashboard", enrollmentRoutes);
-app.use("/api/staff", staffRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/leaves", leaveRoutes);
 app.use("/api/enrollments", StudentEnrollmentRoutes);
 

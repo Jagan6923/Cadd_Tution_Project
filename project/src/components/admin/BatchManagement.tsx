@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Users } from "lucide-react";
 import { format } from "date-fns";
-import type { Batch, Course, UserData } from "../../types";
+import type { Batch, Course } from "../../types";
+import { useNavigate } from "react-router-dom";
 
 interface LocalUserData {
   _id: string;
@@ -32,55 +33,95 @@ export function BatchManagement() {
     },
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
     const fetchBatches = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/batches");
+        const response = await fetch("http://localhost:3000/api/batches", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) throw new Error("Failed to fetch batches");
         const data = await response.json();
         setBatches(data);
       } catch (error) {
-        console.error("Error fetching batches:", error);
+        if (
+          error instanceof Error &&
+          error.message === "Failed to fetch batches"
+        ) {
+          console.error("Error fetching batches:", error);
+        } else {
+          // If unauthorized (401), log out the user
+          localStorage.removeItem("token");
+          navigate("/login"); // Redirect to login page
+        }
       }
     };
 
     const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/courses");
+        const response = await fetch("http://localhost:3000/api/courses", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) throw new Error("Failed to fetch courses");
         const data = await response.json();
         setCourses(data);
       } catch (error) {
-        console.error("Error fetching courses:", error);
+        if (
+          error instanceof Error &&
+          error.message === "Failed to fetch courses"
+        ) {
+          console.error("Error fetching courses:", error);
+        } else {
+          // If unauthorized (401), log out the user
+          localStorage.removeItem("token");
+          navigate("/login"); // Redirect to login page
+        }
       }
     };
+
     const fetchInstructors = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/users", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (!response.ok) throw new Error("Failed to fetch instructors");
 
         const data: LocalUserData[] = await response.json();
-        console.log("Fetched users:", data);
-
         // Filter only instructors (staff role)
         const instructorList = data.filter((user) => user.role === "staff");
-        console.log("Filtered instructors:", instructorList);
         setInstructors(instructorList);
       } catch (error) {
-        console.error("Error fetching instructors:", error);
+        if (
+          error instanceof Error &&
+          error.message === "Failed to fetch instructors"
+        ) {
+          console.error("Error fetching instructors:", error);
+        } else {
+          // If unauthorized (401), log out the user
+          localStorage.removeItem("token");
+          navigate("/login"); // Redirect to login page
+        }
       }
     };
+
     fetchBatches();
     fetchCourses();
     fetchInstructors();
-  }, []);
+  }, [history]);
 
   const handleAddOrEditBatch = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
+
     if (
       !newBatch.name ||
       !newBatch.courseId ||
@@ -93,6 +134,7 @@ export function BatchManagement() {
       alert("Please fill in all fields correctly.");
       return;
     }
+
     try {
       const method = isEditingBatch ? "PUT" : "POST";
       const url = isEditingBatch
@@ -100,9 +142,13 @@ export function BatchManagement() {
         : "http://localhost:3000/api/batches";
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(newBatch),
       });
+
       if (!response.ok) throw new Error("Failed to save batch");
       const savedBatch = await response.json();
       setBatches((prev) =>
@@ -141,11 +187,16 @@ export function BatchManagement() {
   };
 
   const handleDeleteBatch = async (batchId: string) => {
+    const token = localStorage.getItem("token");
+
     try {
       const response = await fetch(
         `http://localhost:3000/api/batches/${batchId}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       if (!response.ok) throw new Error("Failed to delete batch");
@@ -297,7 +348,10 @@ export function BatchManagement() {
                   onChange={(e) =>
                     setNewBatch((prev) => ({
                       ...prev,
-                      schedule: { ...prev.schedule, startTime: e.target.value },
+                      schedule: {
+                        ...prev.schedule,
+                        startTime: e.target.value,
+                      },
                     }))
                   }
                 />
@@ -314,7 +368,10 @@ export function BatchManagement() {
                   onChange={(e) =>
                     setNewBatch((prev) => ({
                       ...prev,
-                      schedule: { ...prev.schedule, endTime: e.target.value },
+                      schedule: {
+                        ...prev.schedule,
+                        endTime: e.target.value,
+                      },
                     }))
                   }
                 />

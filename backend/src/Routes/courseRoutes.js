@@ -1,16 +1,20 @@
-// routes/courseRoutes.js 
 const express = require("express");
 const router = express.Router();
-const Course = require("../models/Course"); 
+const Course = require("../models/Course");
+const authMiddleware = require("../middleware/authMiddleware"); // Import the auth middleware
 
 // Get all courses
 router.get("/", async (req, res) => {
-    const courses = await Course.find();
-    res.json(courses);
+    try {
+        const courses = await Course.find();
+        res.json(courses);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to retrieve courses" });
+    }
 });
 
-// Add a new course
-router.post("/", async (req, res) => {
+// Add a new course (Protected route)
+router.post("/", authMiddleware, async (req, res) => {
     try {
         const newCourse = new Course(req.body);
         await newCourse.save();
@@ -20,8 +24,8 @@ router.post("/", async (req, res) => {
     }
 });
 
-// Edit a course
-router.put("/:id", async (req, res) => {
+// Edit a course (Protected route)
+router.put("/:id", authMiddleware, async (req, res) => {
     try {
         const updatedCourse = await Course.findByIdAndUpdate(
             req.params.id,
@@ -39,8 +43,8 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-// Delete a course
-router.delete("/:id", async (req, res) => {
+// Delete a course (Protected route)
+router.delete("/:id", authMiddleware, async (req, res) => {
     try {
         const deletedCourse = await Course.findByIdAndDelete(req.params.id);
 
@@ -53,6 +57,5 @@ router.delete("/:id", async (req, res) => {
         res.status(500).json({ error: "Failed to delete course" });
     }
 });
-
 
 module.exports = router;

@@ -2,8 +2,9 @@
 const express = require("express");
 const router = express.Router();
 const Batch = require("../models/Batch");
+const authMiddleware = require("../middleware/authMiddleware"); // Import the authMiddleware
 
-// Get all batches
+// Get all batches (no authentication needed)
 router.get("/", async (req, res) => {
     try {
         const batches = await Batch.find();
@@ -13,8 +14,8 @@ router.get("/", async (req, res) => {
     }
 });
 
-// Add a new batch
-router.post("/", async (req, res) => {
+// Add a new batch (authentication required)
+router.post("/", authMiddleware, async (req, res) => {
     try {
         const newBatch = new Batch(req.body);
         await newBatch.save();
@@ -24,8 +25,8 @@ router.post("/", async (req, res) => {
     }
 });
 
-// Edit a batch
-router.put("/:id", async (req, res) => {
+// Edit a batch (authentication required)
+router.put("/:id", authMiddleware, async (req, res) => {
     try {
         const updatedBatch = await Batch.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedBatch) {
@@ -37,8 +38,8 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-// Delete a batch
-router.delete("/:id", async (req, res) => {
+// Delete a batch (authentication required)
+router.delete("/:id", authMiddleware, async (req, res) => {
     try {
         const deletedBatch = await Batch.findByIdAndDelete(req.params.id);
         if (!deletedBatch) {

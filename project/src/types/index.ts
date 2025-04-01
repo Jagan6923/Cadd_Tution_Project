@@ -65,8 +65,6 @@ export interface Attendance {
 }
 
 export interface LeaveRequest {
-  _id(_id: (_id: any, arg1: string) => void, arg1: string): void;
-  _id(_id: any, arg1: string): void;
   id: string;
   staffId: string;
   startDate: string;

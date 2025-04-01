@@ -1,3 +1,4 @@
+// Routes/enrollmentRoutes.js
 const express = require("express");
 const User = require("../models/User");
 const Course = require("../models/Course");
@@ -18,7 +19,6 @@ router.get("/", authMiddleware, async (req, res) => {
             totalStudents,
             totalCourses,
             activeBatches,
-
         });
     } catch (error) {
         console.error("Error fetching dashboard data:", error);

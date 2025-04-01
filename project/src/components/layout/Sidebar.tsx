@@ -14,26 +14,70 @@ import { useState, useEffect } from "react";
 
 const navigationConfig = {
   admin: [
-    { name: "Dashboard", href: "/", icon: HomeIcon as React.ComponentType<React.SVGProps<SVGSVGElement>> },
-    { name: "Students", href: "/studentslist", icon: UsersIcon as React.ComponentType<React.SVGProps<SVGSVGElement>> },
-    { name: "Courses", href: "/courses", icon: GraduationCapIcon as React.ComponentType<React.SVGProps<SVGSVGElement>> },
-    { name: "Batches", href: "/batches", icon: CalendarIcon as React.ComponentType<React.SVGProps<SVGSVGElement>> },
-    { name: "Staff", href: "/staff", icon: UserCogIcon as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    {
+      name: "Dashboard",
+      href: "/",
+      icon: HomeIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+    },
+    {
+      name: "Students",
+      href: "/studentslist",
+      icon: UsersIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+    },
+    {
+      name: "Courses",
+      href: "/courses",
+      icon: GraduationCapIcon as React.ComponentType<
+        React.SVGProps<SVGSVGElement>
+      >,
+    },
+    {
+      name: "Batches",
+      href: "/batches",
+      icon: CalendarIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+    },
+    {
+      name: "Staff",
+      href: "/staff",
+      icon: UserCogIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+    },
   ],
   staff: [
-    { name: "Dashboard", href: "/", icon: HomeIcon as React.ComponentType<React.SVGProps<SVGSVGElement>> },
-    { name: "Leave Request", href: "/staff", icon: CalendarIcon as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    {
+      name: "Dashboard",
+      href: "/",
+      icon: HomeIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+    },
+    {
+      name: "Leave Request",
+      href: "/staff",
+      icon: CalendarIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+    },
   ],
   user: [
-    { name: "Dashboard", href: "/", icon: HomeIcon as React.ComponentType<React.SVGProps<SVGSVGElement>> },
-    { name: "New Course", href: "/students", icon: ClipboardListIcon as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    {
+      name: "Dashboard",
+      href: "/",
+      icon: HomeIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+    },
+    {
+      name: "New Course",
+      href: "/students",
+      icon: ClipboardListIcon as React.ComponentType<
+        React.SVGProps<SVGSVGElement>
+      >,
+    },
   ],
 };
 
 export function Sidebar() {
   const user = useAuthStore((state) => state.user);
   const [navigation, setNavigation] = useState<
-    { name: string; href: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }[]
+    {
+      name: string;
+      href: string;
+      icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    }[]
   >([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -48,7 +92,7 @@ export function Sidebar() {
       {/* Mobile Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 rounded-md bg-gray-900 p-2 text-white md:hidden"
+        className="fixed top-4 left-4 z-50 rounded-md bg-blue-600 p-2 text-white md:hidden"
       >
         {isOpen ? (
           <CloseIcon className="h-6 w-6" />

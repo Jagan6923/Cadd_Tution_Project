@@ -33,7 +33,9 @@ router.post("/", authMiddleware, async (req, res) => {
 router.get("/", authMiddleware, async (req, res) => {
     try {
         const query = req.user.role === "admin" ? {} : { staffId: req.user.id };
-        const leaves = await Leave.find(query).populate("staffId", "name");
+        const leaves = await Leave.find(query)
+            .populate("staffId", "name")
+            .exec();
         res.json(leaves);
     } catch (error) {
         console.error("Error fetching leave requests:", error);
