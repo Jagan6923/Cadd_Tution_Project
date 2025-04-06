@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const Batch = require("../models/Batch");
 const authMiddleware = require("../middleware/authMiddleware"); // Import the authMiddleware
-
+const User = require("../models/User"); // import user model
 // Get all batches (no authentication needed)
 router.get("/", async (req, res) => {
     try {
@@ -51,4 +51,23 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     }
 });
 
+router.get("/staff/:email", async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.params.email });
+
+        if (!user) {
+            return res.status(404).json({ message: "Staff not found" });
+        }
+
+        const staffBatches = await Batch.find({ instructorId: user._id })
+            .populate("courseId", "name description");
+
+        console.log(staffBatches); 
+
+        res.json(staffBatches);
+    } catch (error) {
+        console.error("Error fetching staff classes:", error);
+        res.status(500).json({ message: "Failed to get staff classes" });
+    }
+});
 module.exports = router;

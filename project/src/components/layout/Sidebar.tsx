@@ -53,6 +53,11 @@ const navigationConfig = {
       href: "/staff",
       icon: CalendarIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
     },
+    {
+      name: "Course",
+      href: "/works",
+      icon: CalendarIcon as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+    },
   ],
   user: [
     {
