@@ -6,7 +6,7 @@ type Course = {
   description: string;
 };
 
-const MyCoursePage = () => {
+const AllCourse = () => {
   const [courses, setCourses] = useState<Course[]>([]);
 
   useEffect(() => {
@@ -45,4 +45,4 @@ const MyCoursePage = () => {
   );
 };
 
-export default MyCoursePage;
+export default AllCourse;
