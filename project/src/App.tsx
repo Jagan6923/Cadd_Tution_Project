@@ -18,6 +18,8 @@ import MyCoursePage from "./components/Students/StudentDashboard";
 import { RegisterForm } from "./components/auth/RegisterForm";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import StaffDashboard from "./components/Staff/StaffDashboard";
+import AllCourse from "./components/Students/StudentDashboard";
+import SelectedCourse from "./components/Students/SelectedCourse";
 
 function App() {
   const userRole = useAuthStore((state) => state.user?.role);
@@ -43,7 +45,7 @@ function App() {
               ) : userRole === "staff" ? (
                 <StaffDashboard />
               ) : userRole === "user" ? (
-                <MyCoursePage />
+                <AllCourse />
               ) : (
                 <Navigate to="/login" />
               )
@@ -91,10 +93,18 @@ function App() {
             }
           />
           <Route
-            path="mycourses"
+            path=""
             element={
               <ProtectedRoute allowedRoles={["user"]}>
-                <MyCoursePage />
+                <AllCourse />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="mycourse"
+            element={
+              <ProtectedRoute allowedRoles={["user"]}>
+                <SelectedCourse />
               </ProtectedRoute>
             }
           />

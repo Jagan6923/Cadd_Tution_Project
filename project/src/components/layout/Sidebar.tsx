@@ -67,6 +67,13 @@ const navigationConfig = {
         React.SVGProps<SVGSVGElement>
       >,
     },
+    {
+      name: "My Course",
+      href: "/mycourse",
+      icon: GraduationCapIcon as React.ComponentType<
+        React.SVGProps<SVGSVGElement>
+      >,
+    },
   ],
 };
 
