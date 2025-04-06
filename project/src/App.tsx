@@ -19,6 +19,7 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import StaffDashboard from "./components/Staff/StaffDashboard";
 import AllCourse from "./components/Students/StudentDashboard";
 import SelectedCourse from "./components/Students/SelectedCourse";
+import StaffDetails from "./components/Staff/StaffDetails";
 
 function App() {
   const userRole = useAuthStore((state) => state.user?.role);
@@ -80,6 +81,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin", "staff"]}>
                 {userRole === "admin" ? <LeaveManagement /> : <StaffLeave />}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="works"
+            element={
+              <ProtectedRoute allowedRoles={["staff"]}>
+                <StaffDetails />
               </ProtectedRoute>
             }
           />

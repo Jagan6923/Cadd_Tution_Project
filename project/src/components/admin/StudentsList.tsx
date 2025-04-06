@@ -13,28 +13,56 @@ const StudentsList = () => {
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      if (user?.role === "admin") {
-        try {
-          const response = await fetch("http://localhost:3000/api/users", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          });
-          if (!response.ok) throw new Error("Failed to fetch users");
-          const data = await response.json();
-          setUsers(data);
-        } catch (error) {
-          console.error("Error fetching users:", error);
-        } finally {
-          setLoading(false);
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/users", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch users");
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/users/${userId}/role`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ role: newRole }),
         }
-      } else {
-        setLoading(false);
-      }
-    };
-    fetchUsers();
+      );
+
+      if (!res.ok) throw new Error("Failed to update role");
+
+      const updatedUser = await res.json();
+      setUsers((prev) =>
+        prev.map((u) =>
+          u._id === userId ? { ...u, role: updatedUser.role } : u
+        )
+      );
+    } catch (error) {
+      console.error("Error updating user role:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      fetchUsers();
+    } else {
+      setLoading(false);
+    }
   }, [user]);
 
   return (
@@ -57,11 +85,21 @@ const StudentsList = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
-              <tr key={user._id} className="border-b">
-                <td className="border px-4 py-2">{user.name}</td>
-                <td className="border px-4 py-2">{user.email}</td>
-                <td className="border px-4 py-2">{user.role}</td>
+            {users.map((u) => (
+              <tr key={u._id} className="border-b">
+                <td className="border px-4 py-2">{u.name}</td>
+                <td className="border px-4 py-2">{u.email}</td>
+                <td className="border px-4 py-2">
+                  <select
+                    value={u.role}
+                    onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  >
+                    <option value="user"> User</option>
+                    <option value="staff"> Staff</option>
+                    <option value="admin"> Admin</option>
+                  </select>
+                </td>
               </tr>
             ))}
           </tbody>
