@@ -14,7 +14,6 @@ import { CourseManagement } from "./components/admin/CourseManagement";
 import { BatchManagement } from "./components/admin/BatchManagement";
 import { LeaveManagement } from "./components/admin/LeaveManagement";
 import StudentsList from "./components/admin/StudentsList";
-import MyCoursePage from "./components/Students/StudentDashboard";
 import { RegisterForm } from "./components/auth/RegisterForm";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import StaffDashboard from "./components/Staff/StaffDashboard";
