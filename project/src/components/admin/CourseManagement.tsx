@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import type { Course } from "../../types";
 import type { UserData } from "../../types";
+import config from "../../config";
 export function CourseManagement() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [instructors, setInstructors] = useState<UserData[]>([]);
@@ -20,7 +21,7 @@ export function CourseManagement() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/courses");
+        const response = await fetch(`${config.apiBaseUrl}/api/courses`);
         if (!response.ok) throw new Error("Failed to fetch courses");
         const data = await response.json();
         setCourses(data);
@@ -30,7 +31,7 @@ export function CourseManagement() {
     };
     const fetchInstructors = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/users", {
+        const response = await fetch(`${config.apiBaseUrl}/api/users`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -71,8 +72,8 @@ export function CourseManagement() {
     try {
       const method = isEditingCourse ? "PUT" : "POST";
       const url = isEditingCourse
-        ? `http://localhost:3000/api/courses/${courseToEdit?._id}`
-        : "http://localhost:3000/api/courses";
+        ? `${config.apiBaseUrl}/api/courses/${courseToEdit?._id}`
+        : `${config.apiBaseUrl}/api/courses`;
 
       const response = await fetch(url, {
         method,
@@ -121,7 +122,7 @@ export function CourseManagement() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/courses/${courseId}`,
+        `${config.apiBaseUrl}/api/courses/${courseId}`,
         {
           method: "DELETE",
           headers: {

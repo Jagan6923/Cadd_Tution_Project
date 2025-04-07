@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GraduationCap } from "lucide-react";
-
+import config from "../../config";
 export function RegisterForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -19,7 +19,7 @@ export function RegisterForm() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/register", {
+      const response = await fetch(`${config.apiBaseUrl}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

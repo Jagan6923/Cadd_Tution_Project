@@ -1,6 +1,6 @@
 import { useAuthStore } from "../../lib/store";
 import { useEffect, useState } from "react";
-
+import config from "../../config";
 interface UserData {
   _id: string;
   name: string;
@@ -15,7 +15,7 @@ const StudentsList = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/users", {
+      const response = await fetch(`${config.apiBaseUrl}/api/users`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -32,17 +32,14 @@ const StudentsList = () => {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/users/${userId}/role`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ role: newRole }),
-        }
-      );
+      const res = await fetch(`${config.apiBaseUrl}/api/users/${userId}/role`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ role: newRole }),
+      });
 
       if (!res.ok) throw new Error("Failed to update role");
 

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import React, { useState, useEffect } from "react";
+import { format } from "date-fns";
+import config from "../../config";
 
 interface EnrollmentFormData {
   name: string;
@@ -35,23 +36,23 @@ interface Batch {
 export function StudentEnrollment() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState("");
   const [formData, setFormData] = useState<EnrollmentFormData>({
-    name: '',
-    email: '',
-    phone: '',
-    guardianName: '',
-    guardianPhone: '',
-    address: '',
-    dateOfBirth: '',
-    courseId: '',
-    batchId: '',
+    name: "",
+    email: "",
+    phone: "",
+    guardianName: "",
+    guardianPhone: "",
+    address: "",
+    dateOfBirth: "",
+    courseId: "",
+    batchId: "",
   });
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/courses");
+        const response = await fetch(`${config.apiBaseUrl}/api/courses`);
         if (!response.ok) throw new Error("Failed to fetch courses");
         const data = await response.json();
         setCourses(data);
@@ -62,7 +63,7 @@ export function StudentEnrollment() {
 
     const fetchBatches = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/batches");
+        const response = await fetch(`${config.apiBaseUrl}/api/batches`);
         if (!response.ok) throw new Error("Failed to fetch batches");
         const data = await response.json();
         setBatches(data);
@@ -75,13 +76,17 @@ export function StudentEnrollment() {
     fetchBatches();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    if (name === 'courseId') {
+    if (name === "courseId") {
       setSelectedCourse(value);
-      setFormData(prev => ({ ...prev, batchId: '' }));
+      setFormData((prev) => ({ ...prev, batchId: "" }));
     }
   };
 
@@ -102,7 +107,7 @@ export function StudentEnrollment() {
       return;
     }
     try {
-      const response = await fetch("http://localhost:3000/api/enrollments", {
+      const response = await fetch(`${config.apiBaseUrl}/api/enrollments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -112,15 +117,15 @@ export function StudentEnrollment() {
       console.log("Enrollment successful:", data);
       alert("Enrollment successful!");
       setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        guardianName: '',
-        guardianPhone: '',
-        address: '',
-        dateOfBirth: '',
-        courseId: '',
-        batchId: '',
+        name: "",
+        email: "",
+        phone: "",
+        guardianName: "",
+        guardianPhone: "",
+        address: "",
+        dateOfBirth: "",
+        courseId: "",
+        batchId: "",
       });
     } catch (error) {
       console.error("Error submitting enrollment:", error);
@@ -128,16 +133,25 @@ export function StudentEnrollment() {
     }
   };
 
-  const availableBatches = batches.filter(batch => batch.courseId === selectedCourse);
+  const availableBatches = batches.filter(
+    (batch) => batch.courseId === selectedCourse
+  );
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Student Enrollment</h2>
-      
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        Student Enrollment
+      </h2>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Full Name
+            </label>
             <input
               type="text"
               id="name"
@@ -150,7 +164,12 @@ export function StudentEnrollment() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
             <input
               type="email"
               id="email"
@@ -163,7 +182,12 @@ export function StudentEnrollment() {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Phone Number
+            </label>
             <input
               type="tel"
               id="phone"
@@ -176,7 +200,12 @@ export function StudentEnrollment() {
           </div>
 
           <div>
-            <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">Date of Birth</label>
+            <label
+              htmlFor="dateOfBirth"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Date of Birth
+            </label>
             <input
               type="date"
               id="dateOfBirth"
@@ -189,7 +218,12 @@ export function StudentEnrollment() {
           </div>
 
           <div>
-            <label htmlFor="guardianName" className="block text-sm font-medium text-gray-700">Guardian Name</label>
+            <label
+              htmlFor="guardianName"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Guardian Name
+            </label>
             <input
               type="text"
               id="guardianName"
@@ -202,7 +236,12 @@ export function StudentEnrollment() {
           </div>
 
           <div>
-            <label htmlFor="guardianPhone" className="block text-sm font-medium text-gray-700">Guardian Phone</label>
+            <label
+              htmlFor="guardianPhone"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Guardian Phone
+            </label>
             <input
               type="tel"
               id="guardianPhone"
@@ -216,7 +255,12 @@ export function StudentEnrollment() {
         </div>
 
         <div>
-          <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+          <label
+            htmlFor="address"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Address
+          </label>
           <textarea
             id="address"
             name="address"
@@ -230,7 +274,12 @@ export function StudentEnrollment() {
 
         <div className="space-y-6">
           <div>
-            <label htmlFor="courseId" className="block text-sm font-medium text-gray-700">Select Course</label>
+            <label
+              htmlFor="courseId"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Select Course
+            </label>
             <select
               id="courseId"
               name="courseId"
@@ -240,7 +289,7 @@ export function StudentEnrollment() {
               onChange={handleInputChange}
             >
               <option value="">Select a course</option>
-              {courses.map(course => (
+              {courses.map((course) => (
                 <option key={course._id} value={course._id}>
                   {course.name} - ₹{course.fees}
                 </option>
@@ -250,7 +299,12 @@ export function StudentEnrollment() {
 
           {selectedCourse && (
             <div>
-              <label htmlFor="batchId" className="block text-sm font-medium text-gray-700">Select Batch</label>
+              <label
+                htmlFor="batchId"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Select Batch
+              </label>
               <select
                 id="batchId"
                 name="batchId"
@@ -260,10 +314,11 @@ export function StudentEnrollment() {
                 onChange={handleInputChange}
               >
                 <option value="">Select a batch</option>
-                {availableBatches.map(batch => (
+                {availableBatches.map((batch) => (
                   <option key={batch._id} value={batch._id}>
-                    {batch.name} - {batch.schedule.days.join(', ')} ({batch.schedule.startTime}-{batch.schedule.endTime})
-                    - Starting {format(new Date(batch.startDate), 'MMM d, yyyy')}
+                    {batch.name} - {batch.schedule.days.join(", ")} (
+                    {batch.schedule.startTime}-{batch.schedule.endTime}) -
+                    Starting {format(new Date(batch.startDate), "MMM d, yyyy")}
                   </option>
                 ))}
               </select>

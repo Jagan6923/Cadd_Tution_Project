@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import type { LeaveRequest } from "../../types";
-
+import config from "../../config";
 export function StaffLeave() {
   const [formData, setFormData] = useState<
     Omit<LeaveRequest, "id" | "status" | "staffId" | "appliedDate" | "_id">
@@ -15,7 +15,7 @@ export function StaffLeave() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/api/leaves", {
+      const response = await fetch(`${config.apiBaseUrl}/api/leaves`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

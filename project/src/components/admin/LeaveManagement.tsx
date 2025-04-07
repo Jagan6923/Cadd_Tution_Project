@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import type { LeaveRequest } from "../../types";
 import { useAuthStore } from "../../lib/store";
-
+import config from "../../config";
 export function LeaveManagement() {
   const user = useAuthStore((state) => state.user);
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
@@ -12,7 +12,7 @@ export function LeaveManagement() {
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/leaves", {
+        const response = await fetch(`${config.apiBaseUrl}/api/leaves`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -50,7 +50,7 @@ export function LeaveManagement() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/leaves/${requestId}`,
+        `${config.apiBaseUrl}/api/leaves/${requestId}`,
         {
           method: "PUT",
           headers: {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../lib/store";
-
+import config from "../../config";
 const StaffDetails = () => {
   const user = useAuthStore((state) => state.user);
   const email = user?.email;
@@ -37,7 +37,7 @@ const StaffDetails = () => {
 
       try {
         const res = await fetch(
-          `http://localhost:3000/api/batches/staff/${encodeURIComponent(email)}`
+          `${config.apiBaseUrl}/api/batches/staff/${encodeURIComponent(email)}`
         );
 
         if (!res.ok) {

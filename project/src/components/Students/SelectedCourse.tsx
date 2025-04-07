@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../lib/store";
-
+import config from "../../config";
 const SelectedCourse = () => {
   const user = useAuthStore((state) => state.user);
   const [enrollments, setEnrollments] = useState([]);
@@ -17,7 +17,7 @@ const SelectedCourse = () => {
 
       try {
         const res = await fetch(
-          `http://localhost:3000/api/enrollments/${user.email}`
+          `${config.apiBaseUrl}/api/enrollments/${user.email}`
         );
         const data = await res.json();
 
