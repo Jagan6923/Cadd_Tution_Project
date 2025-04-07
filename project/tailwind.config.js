@@ -3,6 +3,11 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)", ...require("tailwindcss/defaultTheme").fontFamily.sans],
+        serif: ["var(--font-serif)", ...require("tailwindcss/defaultTheme").fontFamily.serif],
+        mono: ["var(--font-mono)", ...require("tailwindcss/defaultTheme").fontFamily.mono],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

@@ -66,8 +66,8 @@ const StudentsList = () => {
   }, [user]);
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow-sm">
-      <h2 className="text-2xl font-bold mb-4">All Users (Admin View)</h2>
+    <div className="rounded-lgp-6 shadow-sm">
+      <h2 className="text-2xl font-bold mb-4">All Users </h2>
 
       {loading ? (
         <p>Loading user details...</p>
@@ -76,7 +76,7 @@ const StudentsList = () => {
           Access Denied. Only Admins can view this page.
         </p>
       ) : users.length > 0 ? (
-        <table className="min-w-full border border-gray-200">
+        <table className="min-w-full border border-gray-200 ">
           <thead>
             <tr className="bg-gray-100">
               <th className="border px-4 py-2 text-left">Name</th>
@@ -86,7 +86,7 @@ const StudentsList = () => {
           </thead>
           <tbody>
             {users.map((u) => (
-              <tr key={u._id} className="border-b">
+              <tr key={u._id} className="border-b even:bg-white odd:bg-gray-50">
                 <td className="border px-4 py-2">{u.name}</td>
                 <td className="border px-4 py-2">{u.email}</td>
                 <td className="border px-4 py-2">
