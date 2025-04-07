@@ -1,6 +1,6 @@
 // config.tsx
 const config = {
-  apiBaseUrl: "http://localhost:3000",
+  apiBaseUrl: "https://cadd-tution-project.vercel.app",
 };
 
 export default config;
