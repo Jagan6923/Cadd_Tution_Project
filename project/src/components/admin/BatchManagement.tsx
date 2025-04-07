@@ -3,7 +3,7 @@ import { Plus, Edit, Trash2, Users } from "lucide-react";
 import { format } from "date-fns";
 import type { Batch, Course } from "../../types";
 import { useNavigate } from "react-router-dom";
-
+import config from "../../config";
 interface LocalUserData {
   _id: string;
   name: string;
@@ -40,7 +40,7 @@ export function BatchManagement() {
 
     const fetchBatches = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/batches", {
+        const response = await fetch(`${config.apiBaseUrl}/api/batches`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -64,7 +64,7 @@ export function BatchManagement() {
 
     const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/courses", {
+        const response = await fetch(`${config.apiBaseUrl}/api/courses`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -88,7 +88,7 @@ export function BatchManagement() {
 
     const fetchInstructors = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/users", {
+        const response = await fetch(`${config.apiBaseUrl}/api/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -138,8 +138,8 @@ export function BatchManagement() {
     try {
       const method = isEditingBatch ? "PUT" : "POST";
       const url = isEditingBatch
-        ? `http://localhost:3000/api/batches/${batchToEdit?._id}`
-        : "http://localhost:3000/api/batches";
+        ? `${config.apiBaseUrl}/api/batches/${batchToEdit?._id}`
+        : `${config.apiBaseUrl}/api/batches`;
       const response = await fetch(url, {
         method,
         headers: {
@@ -191,7 +191,7 @@ export function BatchManagement() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/batches/${batchId}`,
+        `${config.apiBaseUrl}/api/batches/${batchId}`,
         {
           method: "DELETE",
           headers: {

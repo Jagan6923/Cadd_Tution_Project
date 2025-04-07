@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../lib/store";
 import { Users, FileText, Calendar } from "lucide-react";
-
+import config from "../../config";
 interface AdminDashboardData {
   totalStudents: number;
   activeBatches: number;
@@ -22,7 +22,7 @@ function AdminDashboard() {
         if (user?.role !== "admin") {
           throw new Error("Unauthorized access");
         }
-        const response = await fetch("http://localhost:3000/api/dashboard", {
+        const response = await fetch(`${config.apiBaseUrl}/api/dashboard`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

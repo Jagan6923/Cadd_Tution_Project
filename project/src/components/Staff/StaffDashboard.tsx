@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../lib/store";
 import { format } from "date-fns";
+import config from "../../config";
 
 interface LeaveRequest {
   id: string;
@@ -20,7 +21,7 @@ function StaffDashboard() {
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/leaves", {
+        const response = await fetch(`${config.apiBaseUrl}/api/leaves`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -46,7 +47,7 @@ function StaffDashboard() {
   ) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/leaves/${requestId}`,
+        `${config.apiBaseUrl}/api/leaves/${requestId}`,
         {
           method: "PUT",
           headers: {

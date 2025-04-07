@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import config from "../../config";
 type Course = {
   _id: string;
   name: string;
@@ -12,7 +12,7 @@ const AllCourse = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/courses");
+        const response = await fetch(`${config.apiBaseUrl}/api/courses`);
         if (!response.ok) throw new Error("Failed to fetch courses");
         const coursesData: Course[] = await response.json();
         setCourses(coursesData);
